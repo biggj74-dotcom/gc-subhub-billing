@@ -1,0 +1,7 @@
+echo "# gc-subhub-billing" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/biggj74-dotcom/gc-subhub-billing.git
+git push -u origin main
