@@ -1,16 +1,17 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import type { NavigatorScreenParams } from '@react-navigation/native';
 import { Home, Truck, MessageCircle, Users, User } from 'lucide-react-native';
 import { View } from 'react-native';
 import { C, body } from '../theme/tokens';
 import { HomeScreen } from '../screens/home/HomeScreen';
-import { LoadsStack } from './LoadsStack';
+import { LoadsStack, type LoadsStackParamList } from './LoadsStack';
 import { ProfileStack } from './ProfileStack';
 import { ComingSoonScreen } from '../screens/placeholder/ComingSoonScreen';
 import { useL } from '../i18n/useLanguage';
 
 export type MainTabsParamList = {
   Home: undefined;
-  Loads: undefined;
+  Loads: NavigatorScreenParams<LoadsStackParamList>;
   Messages: undefined;
   Community: undefined;
   Profile: undefined;

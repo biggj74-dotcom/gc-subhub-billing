@@ -1,13 +1,15 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { AlertTriangle } from 'lucide-react-native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { C, display, body } from '../../theme/tokens';
 import { TopBar } from '../../components/TopBar';
 import { useAuthStore } from '../../stores/authStore';
 import { useL } from '../../i18n/useLanguage';
 import { useMyLoads } from '../../hooks/useLoads';
 import { StatusPill } from '../../components/StatusPill';
+import type { MainTabsParamList } from '../../navigation/MainTabs';
 
-export function HomeScreen() {
+export function HomeScreen({ navigation }: BottomTabScreenProps<MainTabsParamList, 'Home'>) {
   const L = useL();
   const profile = useAuthStore((s) => s.profile);
   const isDriver = profile?.role === 'driver';
@@ -33,7 +35,8 @@ export function HomeScreen() {
         ) : null}
 
         {activeLoad ? (
-          <View
+          <Pressable
+            onPress={() => navigation.navigate('Loads', { screen: 'LoadDetail', params: { loadId: activeLoad.id } })}
             className="rounded p-4"
             style={{ backgroundColor: C.panel, borderWidth: 1, borderColor: C.line, borderLeftWidth: 3, borderLeftColor: C.gold }}
           >
@@ -44,7 +47,7 @@ export function HomeScreen() {
               <StatusPill status={activeLoad.status === 'en_route' ? 'En Route' : 'Booked'} />
             </View>
             <Text style={[body, { color: C.silver, fontSize: 12 }]}>${activeLoad.rate} · {activeLoad.miles} mi</Text>
-          </View>
+          </Pressable>
         ) : (
           <View className="rounded p-4" style={{ backgroundColor: C.panel, borderWidth: 1, borderColor: C.line }}>
             <Text style={[body, { color: C.silver, fontSize: 12.5 }]}>{L('noLoads')}</Text>
