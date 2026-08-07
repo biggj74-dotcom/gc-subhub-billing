@@ -1,7 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../stores/authStore';
-import type { LoadRow } from '../types/database';
+import type { LoadOfferRow, LoadRow } from '../types/database';
+
+export type LoadOfferWithDriver = LoadOfferRow & {
+  driver: { full_name: string | null; email: string } | null;
+};
 
 export function useOpenLoads() {
   return useQuery({
@@ -39,17 +43,48 @@ export function useMyLoads() {
   });
 }
 
+/** Offers on a load, with the driver's name embedded — used by the load's poster to review them. */
 export function useLoadOffers(loadId: string) {
   return useQuery({
     queryKey: ['load_offers', loadId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('load_offers')
-        .select('*')
+        .select('*, driver:users(full_name, email)')
         .eq('load_id', loadId)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data;
+      return data as unknown as LoadOfferWithDriver[];
+    },
+  });
+}
+
+export function useAcceptOffer(loadId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (offerId: string) => {
+      const { error } = await supabase.rpc('accept_load_offer', { p_offer_id: offerId });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['load_offers', loadId] });
+      queryClient.invalidateQueries({ queryKey: ['load', loadId] });
+      queryClient.invalidateQueries({ queryKey: ['loads'] });
+    },
+  });
+}
+
+export function useRejectOffer(loadId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (offerId: string) => {
+      const { error } = await supabase.from('load_offers').update({ status: 'rejected' }).eq('id', offerId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['load_offers', loadId] });
     },
   });
 }
