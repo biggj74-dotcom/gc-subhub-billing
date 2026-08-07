@@ -64,6 +64,10 @@ export const dict = {
     ratePerMile: 'Rate/mile',
     track: 'Track',
     trackTitle: 'Track',
+    offers: 'Offers',
+    noOffers: 'No offers yet.',
+    accept: 'Accept',
+    reject: 'Reject',
 
     // profile
     documents: 'Documents',
@@ -132,6 +136,10 @@ export const dict = {
     ratePerMile: 'Tarifa/milla',
     track: 'Rastrear',
     trackTitle: 'Rastrear',
+    offers: 'Ofertas',
+    noOffers: 'Aún no hay ofertas.',
+    accept: 'Aceptar',
+    reject: 'Rechazar',
 
     documents: 'Documentos',
     subscription: 'Suscripción',

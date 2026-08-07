@@ -142,6 +142,11 @@ export type Database = {
       notifications: TableDef<NotificationRow>;
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      accept_load_offer: {
+        Args: { p_offer_id: string };
+        Returns: LoadRow;
+      };
+    };
   };
 };

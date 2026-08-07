@@ -6,17 +6,25 @@ import { C, display, body } from '../../theme/tokens';
 import { TopBar } from '../../components/TopBar';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { TextField } from '../../components/TextField';
+import { StatusPill } from '../../components/StatusPill';
 import { useL } from '../../i18n/useLanguage';
-import { useSubmitOffer } from '../../hooks/useLoads';
+import { useAuthStore } from '../../stores/authStore';
+import { useAcceptOffer, useLoadOffers, useRejectOffer, useSubmitOffer, type LoadOfferWithDriver } from '../../hooks/useLoads';
 import { supabase } from '../../lib/supabase';
 import type { LoadsStackParamList } from '../../navigation/LoadsStack';
 import type { LoadRow } from '../../types/database';
 
+const OFFER_STATUS_LABEL: Record<LoadOfferWithDriver['status'], string> = {
+  pending: 'Pending',
+  accepted: 'Accepted',
+  rejected: 'Rejected',
+};
+
 export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<LoadsStackParamList, 'LoadDetail'>) {
   const L = useL();
   const { loadId } = route.params;
+  const userId = useAuthStore((s) => s.session?.user.id);
   const [offerRate, setOfferRate] = useState('');
-  const [submitted, setSubmitted] = useState(false);
 
   const { data: load, isLoading } = useQuery({
     queryKey: ['load', loadId],
@@ -27,7 +35,13 @@ export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<L
     },
   });
 
+  const isPoster = !!load && load.posted_by_id === userId;
+  const offers = useLoadOffers(loadId);
   const submitOffer = useSubmitOffer(loadId);
+  const acceptOffer = useAcceptOffer(loadId);
+  const rejectOffer = useRejectOffer(loadId);
+
+  const myOffer = offers.data?.find((o) => o.driver_id === userId);
 
   if (isLoading || !load) {
     return (
@@ -50,7 +64,6 @@ export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<L
   const handleSubmit = async () => {
     const rate = Number(offerRate) || load.rate || 0;
     await submitOffer.mutateAsync(rate);
-    setSubmitted(true);
   };
 
   return (
@@ -87,7 +100,53 @@ export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<L
           ) : null}
         </View>
 
-        {!submitted ? (
+        {isPoster ? (
+          <View className="gap-2">
+            <Text style={[body, { color: C.silver, fontSize: 10, letterSpacing: 0.4 }]}>{L('offers').toUpperCase()}</Text>
+            {offers.data?.length ? (
+              offers.data.map((offer) => (
+                <View key={offer.id} className="rounded p-3.5" style={{ backgroundColor: C.panel, borderWidth: 1, borderColor: C.line }}>
+                  <View className="mb-2 flex-row items-center justify-between">
+                    <Text style={[body, { color: C.paper, fontSize: 13.5, fontWeight: '600' }]}>
+                      {offer.driver?.full_name ?? offer.driver?.email ?? L('driver')}
+                    </Text>
+                    <StatusPill status={OFFER_STATUS_LABEL[offer.status]} />
+                  </View>
+                  <Text style={[display, { color: C.paper, fontSize: 18, fontWeight: '700' }]}>${offer.offered_rate}</Text>
+                  {offer.status === 'pending' ? (
+                    <View className="mt-3 flex-row gap-2">
+                      <View className="flex-1">
+                        <PrimaryButton
+                          title={L('accept')}
+                          onPress={() => acceptOffer.mutate(offer.id)}
+                          loading={acceptOffer.isPending}
+                        />
+                      </View>
+                      <View className="flex-1">
+                        <PrimaryButton
+                          title={L('reject')}
+                          variant="outline"
+                          onPress={() => rejectOffer.mutate(offer.id)}
+                          loading={rejectOffer.isPending}
+                        />
+                      </View>
+                    </View>
+                  ) : null}
+                </View>
+              ))
+            ) : (
+              <Text style={[body, { color: C.silver, fontSize: 12.5 }]}>{L('noOffers')}</Text>
+            )}
+          </View>
+        ) : myOffer ? (
+          <View className="rounded p-4" style={{ backgroundColor: C.panel, borderWidth: 1, borderColor: C.line }}>
+            <View className="mb-1 flex-row items-center justify-between">
+              <Text style={[body, { color: C.silver, fontSize: 10, letterSpacing: 0.4 }]}>{L('offerRate')}</Text>
+              <StatusPill status={OFFER_STATUS_LABEL[myOffer.status]} />
+            </View>
+            <Text style={[display, { color: C.paper, fontSize: 20, fontWeight: '700' }]}>${myOffer.offered_rate}</Text>
+          </View>
+        ) : load.status === 'open' ? (
           <TextField
             label={L('offerRate')}
             value={offerRate}
@@ -98,14 +157,11 @@ export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<L
         ) : null}
       </ScrollView>
 
-      <View className="px-5 pb-6">
-        <PrimaryButton
-          title={submitted ? L('offerSubmitted') : L('submitOffer')}
-          onPress={handleSubmit}
-          disabled={submitted}
-          loading={submitOffer.isPending}
-        />
-      </View>
+      {!isPoster && !myOffer && load.status === 'open' ? (
+        <View className="px-5 pb-6">
+          <PrimaryButton title={L('submitOffer')} onPress={handleSubmit} loading={submitOffer.isPending} />
+        </View>
+      ) : null}
     </View>
   );
 }

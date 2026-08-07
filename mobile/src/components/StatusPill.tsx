@@ -14,6 +14,8 @@ const STATUS_COLOR: Record<string, string> = {
   Open: C.blue,
   Booked: C.gold,
   Cancelled: C.red,
+  Accepted: C.green,
+  Rejected: C.red,
 };
 
 export function StatusPill({ status }: { status: string }) {
