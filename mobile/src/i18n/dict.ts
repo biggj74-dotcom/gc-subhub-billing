@@ -1,0 +1,153 @@
+/**
+ * Bilingual dictionary, ported from the prototype's `dict` / `makeL` pattern
+ * in gcsubhub-trucking.jsx. Chrome/navigation and action strings are
+ * translated; only keys needed by the screens built so far are here —
+ * add more as each new screen comes online.
+ */
+export const dict = {
+  en: {
+    // shell / nav
+    home: 'Home',
+    loads: 'Loads',
+    msgs: 'Msgs',
+    community: 'Community',
+    profile: 'Profile',
+    language: 'Language',
+
+    // auth
+    signIn: 'Sign In',
+    signUp: 'Create Account',
+    email: 'Email',
+    password: 'Password',
+    fullName: 'Full name',
+    role: 'Role',
+    driver: 'Driver',
+    dispatcher: 'Dispatcher',
+    fleet: 'Fleet',
+    broker: 'Broker',
+    dontHaveAccount: "Don't have an account?",
+    alreadyHaveAccount: 'Already have an account?',
+    signOut: 'Sign out',
+    signInError: 'Could not sign in. Check your email and password.',
+    signUpError: 'Could not create account.',
+
+    // dashboard
+    dashboard: 'Dashboard',
+    fleetOverview: 'Fleet Overview',
+    thisWeek: 'This week',
+    activeLoad: 'Active load',
+    available: 'Available',
+    onLoadStat: 'On load',
+    offDuty: 'Off duty',
+
+    // load board
+    board: 'Board',
+    myLoads: 'My Loads',
+    postLoad: 'Post a Load',
+    postToBoard: 'Post to load board',
+    loadPosted: 'Load posted ✓',
+    dotVerified: 'DOT & MC verified',
+    loadWorkspace: 'Load Workspace',
+    submitOffer: 'Submit offer at posted rate',
+    offerSubmitted: 'Offer submitted ✓',
+    offerRate: 'Your offer',
+    noLoads: 'No open loads match your filters.',
+    hazmat: 'HAZMAT',
+    equipment: 'Equipment',
+    weight: 'Weight',
+    distance: 'Distance',
+    pickup: 'Pickup',
+    loadType: 'Load type',
+    full: 'Full',
+    partial: 'Partial',
+    postedRate: 'Posted rate',
+    ratePerMile: 'Rate/mile',
+    track: 'Track',
+    trackTitle: 'Track',
+
+    // profile
+    documents: 'Documents',
+    subscription: 'Subscription',
+    savedLocally: 'Saved to this device',
+
+    // misc
+    comingSoon: 'Coming soon',
+    comingSoonBody: "This screen isn't built yet — it's next up in the build order.",
+    loading: 'Loading…',
+    retry: 'Retry',
+    somethingWentWrong: 'Something went wrong.',
+  },
+  es: {
+    home: 'Inicio',
+    loads: 'Cargas',
+    msgs: 'Msjs',
+    community: 'Comunidad',
+    profile: 'Perfil',
+    language: 'Idioma',
+
+    signIn: 'Iniciar sesión',
+    signUp: 'Crear cuenta',
+    email: 'Correo electrónico',
+    password: 'Contraseña',
+    fullName: 'Nombre completo',
+    role: 'Rol',
+    driver: 'Conductor',
+    dispatcher: 'Despachador',
+    fleet: 'Flota',
+    broker: 'Corredor',
+    dontHaveAccount: '¿No tienes una cuenta?',
+    alreadyHaveAccount: '¿Ya tienes una cuenta?',
+    signOut: 'Cerrar sesión',
+    signInError: 'No se pudo iniciar sesión. Verifique su correo y contraseña.',
+    signUpError: 'No se pudo crear la cuenta.',
+
+    dashboard: 'Panel',
+    fleetOverview: 'Resumen de la flota',
+    thisWeek: 'Esta semana',
+    activeLoad: 'Carga activa',
+    available: 'Disponible',
+    onLoadStat: 'En carga',
+    offDuty: 'Fuera de servicio',
+
+    board: 'Tablero',
+    myLoads: 'Mis cargas',
+    postLoad: 'Publicar carga',
+    postToBoard: 'Publicar en el tablero',
+    loadPosted: 'Carga publicada ✓',
+    dotVerified: 'DOT y MC verificado',
+    loadWorkspace: 'Espacio de trabajo de carga',
+    submitOffer: 'Enviar oferta a la tarifa publicada',
+    offerSubmitted: 'Oferta enviada ✓',
+    offerRate: 'Su oferta',
+    noLoads: 'Ninguna carga abierta coincide con sus filtros.',
+    hazmat: 'PELIGROSO',
+    equipment: 'Equipo',
+    weight: 'Peso',
+    distance: 'Distancia',
+    pickup: 'Recogida',
+    loadType: 'Tipo de carga',
+    full: 'Completa',
+    partial: 'Parcial',
+    postedRate: 'Tarifa publicada',
+    ratePerMile: 'Tarifa/milla',
+    track: 'Rastrear',
+    trackTitle: 'Rastrear',
+
+    documents: 'Documentos',
+    subscription: 'Suscripción',
+    savedLocally: 'Guardado en este dispositivo',
+
+    comingSoon: 'Próximamente',
+    comingSoonBody: 'Esta pantalla aún no está lista — es la siguiente en el plan de construcción.',
+    loading: 'Cargando…',
+    retry: 'Reintentar',
+    somethingWentWrong: 'Algo salió mal.',
+  },
+} as const;
+
+export type Lang = keyof typeof dict;
+export type DictKey = keyof typeof dict.en;
+
+export function makeL(lang: Lang) {
+  return (key: DictKey): string => dict[lang]?.[key] ?? dict.en[key] ?? key;
+}
