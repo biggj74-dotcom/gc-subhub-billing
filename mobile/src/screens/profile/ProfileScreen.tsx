@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { ShieldCheck } from 'lucide-react-native';
+import { ChevronRight, FileText, ShieldCheck } from 'lucide-react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { C, display, body } from '../../theme/tokens';
 import { TopBar } from '../../components/TopBar';
 import { PrimaryButton } from '../../components/PrimaryButton';
@@ -7,8 +8,9 @@ import { useAuthStore } from '../../stores/authStore';
 import { useL } from '../../i18n/useLanguage';
 import { useLanguageStore } from '../../i18n/useLanguage';
 import type { Lang } from '../../i18n/dict';
+import type { ProfileStackParamList } from '../../navigation/ProfileStack';
 
-export function ProfileScreen() {
+export function ProfileScreen({ navigation }: NativeStackScreenProps<ProfileStackParamList, 'Profile'>) {
   const L = useL();
   const profile = useAuthStore((s) => s.profile);
   const signOut = useAuthStore((s) => s.signOut);
@@ -61,6 +63,18 @@ export function ProfileScreen() {
             ))}
           </View>
         </View>
+
+        <Pressable
+          onPress={() => navigation.navigate('Documents')}
+          className="flex-row items-center justify-between rounded p-4"
+          style={{ backgroundColor: C.panel, borderWidth: 1, borderColor: C.line }}
+        >
+          <View className="flex-row items-center gap-2.5">
+            <FileText size={14} color={C.silver} />
+            <Text style={[body, { color: C.paper, fontSize: 13, fontWeight: '600' }]}>{L('documents')}</Text>
+          </View>
+          <ChevronRight size={16} color={C.silver} />
+        </Pressable>
 
         <PrimaryButton title={L('signOut')} onPress={signOut} variant="outline" />
       </ScrollView>

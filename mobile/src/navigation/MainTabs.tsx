@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { C, body } from '../theme/tokens';
 import { HomeScreen } from '../screens/home/HomeScreen';
 import { LoadsStack } from './LoadsStack';
-import { ProfileScreen } from '../screens/profile/ProfileScreen';
+import { ProfileStack } from './ProfileStack';
 import { ComingSoonScreen } from '../screens/placeholder/ComingSoonScreen';
 import { useL } from '../i18n/useLanguage';
 
@@ -47,7 +47,7 @@ export function MainTabs() {
       <Tab.Screen name="Community" options={{ tabBarLabel: L('community') }}>
         {() => <ComingSoonScreen title={L('community')} />}
       </Tab.Screen>
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: L('profile') }} />
+      <Tab.Screen name="Profile" component={ProfileStack} options={{ tabBarLabel: L('profile') }} />
     </Tab.Navigator>
   );
 }
