@@ -22,6 +22,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "GCSubHub Trucking uses your location to log check-ins on your active load."
+        }
+      ]
+    ]
   }
 }

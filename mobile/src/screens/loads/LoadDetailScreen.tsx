@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
+import { Navigation } from 'lucide-react-native';
 import { C, display, body } from '../../theme/tokens';
 import { TopBar } from '../../components/TopBar';
 import { PrimaryButton } from '../../components/PrimaryButton';
@@ -42,6 +43,10 @@ export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<L
   const rejectOffer = useRejectOffer(loadId);
 
   const myOffer = offers.data?.find((o) => o.driver_id === userId);
+  const canTrack =
+    !!load &&
+    (load.status === 'booked' || load.status === 'en_route') &&
+    (isPoster || load.assigned_driver_id === userId);
 
   if (isLoading || !load) {
     return (
@@ -99,6 +104,17 @@ export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<L
             </View>
           ) : null}
         </View>
+
+        {canTrack ? (
+          <Pressable
+            onPress={() => navigation.navigate('Tracking', { loadId })}
+            className="flex-row items-center gap-1.5 rounded px-3 py-2.5"
+            style={{ backgroundColor: C.panel, borderWidth: 1, borderColor: C.line }}
+          >
+            <Navigation size={13} color={C.gold} />
+            <Text style={[body, { color: C.gold, fontSize: 12, fontWeight: '600' }]}>{L('track')}</Text>
+          </Pressable>
+        ) : null}
 
         {isPoster ? (
           <View className="gap-2">

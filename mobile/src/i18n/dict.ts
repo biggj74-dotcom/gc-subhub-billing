@@ -68,6 +68,12 @@ export const dict = {
     noOffers: 'No offers yet.',
     accept: 'Accept',
     reject: 'Reject',
+    checkIns: 'Check-ins',
+    lastCheckIn: 'Last check-in',
+    noCheckIns: 'No check-ins yet.',
+    checkInNote: 'Note (optional)',
+    checkInNotePlaceholder: 'e.g. I-40 near Nashville',
+    sendCheckIn: 'Send check-in',
 
     // profile
     documents: 'Documents',
@@ -148,6 +154,12 @@ export const dict = {
     noOffers: 'Aún no hay ofertas.',
     accept: 'Aceptar',
     reject: 'Rechazar',
+    checkIns: 'Registros',
+    lastCheckIn: 'Último registro',
+    noCheckIns: 'Aún no hay registros.',
+    checkInNote: 'Nota (opcional)',
+    checkInNotePlaceholder: 'p. ej. I-40 cerca de Nashville',
+    sendCheckIn: 'Enviar registro',
 
     documents: 'Documentos',
     subscription: 'Suscripción',
