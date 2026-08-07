@@ -74,6 +74,8 @@ export const dict = {
     checkInNote: 'Note (optional)',
     checkInNotePlaceholder: 'e.g. I-40 near Nashville',
     sendCheckIn: 'Send check-in',
+    noConversations: "No conversations yet — they'll appear here once a load is booked.",
+    sendCheckCall: 'Send a check call...',
 
     // profile
     documents: 'Documents',
@@ -160,6 +162,8 @@ export const dict = {
     checkInNote: 'Nota (opcional)',
     checkInNotePlaceholder: 'p. ej. I-40 cerca de Nashville',
     sendCheckIn: 'Enviar registro',
+    noConversations: 'Aún no hay conversaciones — aparecerán aquí cuando se reserve una carga.',
+    sendCheckCall: 'Enviar una llamada de control...',
 
     documents: 'Documentos',
     subscription: 'Suscripción',

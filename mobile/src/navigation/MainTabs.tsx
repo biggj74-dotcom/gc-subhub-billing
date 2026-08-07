@@ -6,13 +6,14 @@ import { C, body } from '../theme/tokens';
 import { HomeScreen } from '../screens/home/HomeScreen';
 import { LoadsStack, type LoadsStackParamList } from './LoadsStack';
 import { ProfileStack } from './ProfileStack';
+import { MessagesStack, type MessagesStackParamList } from './MessagesStack';
 import { ComingSoonScreen } from '../screens/placeholder/ComingSoonScreen';
 import { useL } from '../i18n/useLanguage';
 
 export type MainTabsParamList = {
   Home: undefined;
   Loads: NavigatorScreenParams<LoadsStackParamList>;
-  Messages: undefined;
+  Messages: NavigatorScreenParams<MessagesStackParamList>;
   Community: undefined;
   Profile: undefined;
 };
@@ -42,9 +43,7 @@ export function MainTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: L('home') }} />
       <Tab.Screen name="Loads" component={LoadsStack} options={{ tabBarLabel: L('loads') }} />
-      <Tab.Screen name="Messages" options={{ tabBarLabel: L('msgs') }}>
-        {() => <ComingSoonScreen title={L('msgs')} />}
-      </Tab.Screen>
+      <Tab.Screen name="Messages" component={MessagesStack} options={{ tabBarLabel: L('msgs') }} />
       <Tab.Screen name="Community" options={{ tabBarLabel: L('community') }}>
         {() => <ComingSoonScreen title={L('community')} />}
       </Tab.Screen>
