@@ -76,6 +76,8 @@ export const dict = {
     sendCheckIn: 'Send check-in',
     noConversations: "No conversations yet — they'll appear here once a load is booked.",
     sendCheckCall: 'Send a check call...',
+    notifications: 'Notifications',
+    noNotifications: 'No notifications yet.',
 
     // profile
     documents: 'Documents',
@@ -164,6 +166,8 @@ export const dict = {
     sendCheckIn: 'Enviar registro',
     noConversations: 'Aún no hay conversaciones — aparecerán aquí cuando se reserve una carga.',
     sendCheckCall: 'Enviar una llamada de control...',
+    notifications: 'Notificaciones',
+    noNotifications: 'Aún no hay notificaciones.',
 
     documents: 'Documentos',
     subscription: 'Suscripción',

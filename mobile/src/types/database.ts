@@ -27,6 +27,7 @@ export type UserRow = {
   mc_number: string | null;
   cdl_verified_at: string | null;
   medical_card_expires_at: string | null;
+  expo_push_token: string | null;
   created_at: string;
 };
 

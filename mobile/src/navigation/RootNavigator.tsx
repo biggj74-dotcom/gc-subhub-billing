@@ -3,6 +3,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { C } from '../theme/tokens';
 import { useAuthStore } from '../stores/authStore';
+import { usePushRegistration } from '../hooks/usePushRegistration';
 import { AuthStack } from './AuthStack';
 import { MainTabs } from './MainTabs';
 
@@ -20,6 +21,8 @@ export function RootNavigator() {
     const unsubscribe = init();
     return unsubscribe;
   }, [init]);
+
+  usePushRegistration();
 
   if (initializing) {
     return (
