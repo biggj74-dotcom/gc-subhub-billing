@@ -10,7 +10,15 @@ import { TextField } from '../../components/TextField';
 import { StatusPill } from '../../components/StatusPill';
 import { useL } from '../../i18n/useLanguage';
 import { useAuthStore } from '../../stores/authStore';
-import { useAcceptOffer, useLoadOffers, useRejectOffer, useSubmitOffer, type LoadOfferWithDriver } from '../../hooks/useLoads';
+import {
+  useAcceptOffer,
+  useAdvanceLoadStatus,
+  useLoadOffers,
+  useRejectOffer,
+  useSubmitOffer,
+  type LoadOfferWithDriver,
+} from '../../hooks/useLoads';
+import { useLoadSettlement } from '../../hooks/useSettlements';
 import { supabase } from '../../lib/supabase';
 import type { LoadsStackParamList } from '../../navigation/LoadsStack';
 import type { LoadRow } from '../../types/database';
@@ -19,6 +27,14 @@ const OFFER_STATUS_LABEL: Record<LoadOfferWithDriver['status'], string> = {
   pending: 'Pending',
   accepted: 'Accepted',
   rejected: 'Rejected',
+};
+
+// Driver-advanceable steps in a load's lifecycle. 'booked' is set
+// automatically when an offer is accepted; 'open'/'cancelled' aren't
+// reachable from here.
+const NEXT_STATUS: Partial<Record<LoadRow['status'], { status: LoadRow['status']; labelKey: 'markEnRoute' | 'markDelivered' }>> = {
+  booked: { status: 'en_route', labelKey: 'markEnRoute' },
+  en_route: { status: 'delivered', labelKey: 'markDelivered' },
 };
 
 export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<LoadsStackParamList, 'LoadDetail'>) {
@@ -41,12 +57,14 @@ export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<L
   const submitOffer = useSubmitOffer(loadId);
   const acceptOffer = useAcceptOffer(loadId);
   const rejectOffer = useRejectOffer(loadId);
+  const advanceStatus = useAdvanceLoadStatus(loadId);
+  const loadSettlement = useLoadSettlement(loadId);
 
   const myOffer = offers.data?.find((o) => o.driver_id === userId);
-  const canTrack =
-    !!load &&
-    (load.status === 'booked' || load.status === 'en_route') &&
-    (isPoster || load.assigned_driver_id === userId);
+  const isAssignedDriver = !!load && load.assigned_driver_id === userId;
+  const canTrack = !!load && (load.status === 'booked' || load.status === 'en_route') && (isPoster || isAssignedDriver);
+  const nextStep = load ? NEXT_STATUS[load.status] : undefined;
+  const canRecordSettlement = isPoster && load.status === 'delivered' && !loadSettlement.data;
 
   if (isLoading || !load) {
     return (
@@ -114,6 +132,23 @@ export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<L
             <Navigation size={13} color={C.gold} />
             <Text style={[body, { color: C.gold, fontSize: 12, fontWeight: '600' }]}>{L('track')}</Text>
           </Pressable>
+        ) : null}
+
+        {isAssignedDriver && nextStep ? (
+          <PrimaryButton
+            title={L(nextStep.labelKey)}
+            onPress={() => advanceStatus.mutate(nextStep.status)}
+            loading={advanceStatus.isPending}
+            variant="outline"
+          />
+        ) : null}
+
+        {canRecordSettlement ? (
+          <PrimaryButton
+            title={L('recordSettlement')}
+            onPress={() => navigation.navigate('RecordSettlement', { loadId })}
+            variant="outline"
+          />
         ) : null}
 
         {isPoster ? (

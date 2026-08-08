@@ -9,6 +9,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useL } from '../../i18n/useLanguage';
 import { useMyLoads } from '../../hooks/useLoads';
 import { useNotifications } from '../../hooks/useNotifications';
+import { useSettlements } from '../../hooks/useSettlements';
 import { StatusPill } from '../../components/StatusPill';
 import type { MainTabsParamList } from '../../navigation/MainTabs';
 import type { HomeStackParamList } from '../../navigation/HomeStack';
@@ -27,6 +28,11 @@ export function HomeScreen() {
   const activeLoad = myLoads?.find((l) => l.status === 'en_route' || l.status === 'booked');
   const { data: notifications } = useNotifications();
   const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
+  const { data: settlements } = useSettlements();
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const weekTotal = (settlements ?? [])
+    .filter((s) => s.paid_at && new Date(s.paid_at).getTime() >= weekAgo)
+    .reduce((sum, s) => sum + s.net, 0);
 
   return (
     <View className="flex-1" style={{ backgroundColor: C.bg }}>
@@ -57,6 +63,17 @@ export function HomeScreen() {
             <AlertTriangle size={14} color={C.gold} />
             <Text style={[body, { color: C.paper, fontSize: 12.5, flex: 1 }]}>{L('savedLocally')}</Text>
           </View>
+        ) : null}
+
+        {isDriver ? (
+          <Pressable
+            onPress={() => homeNav.navigate('Earnings')}
+            className="rounded p-4"
+            style={{ backgroundColor: C.panel, borderWidth: 1, borderColor: C.line }}
+          >
+            <Text style={[body, { color: C.silver, fontSize: 10.5, letterSpacing: 0.4 }]}>{L('thisWeek')}</Text>
+            <Text style={[display, { color: C.paper, fontSize: 28, fontWeight: '700' }]}>${weekTotal.toLocaleString()}</Text>
+          </Pressable>
         ) : null}
 
         {activeLoad ? (
