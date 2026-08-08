@@ -3,7 +3,7 @@ import type { NavigatorScreenParams } from '@react-navigation/native';
 import { Home, Truck, MessageCircle, Users, User } from 'lucide-react-native';
 import { View } from 'react-native';
 import { C, body } from '../theme/tokens';
-import { HomeScreen } from '../screens/home/HomeScreen';
+import { HomeStack, type HomeStackParamList } from './HomeStack';
 import { LoadsStack, type LoadsStackParamList } from './LoadsStack';
 import { ProfileStack } from './ProfileStack';
 import { MessagesStack, type MessagesStackParamList } from './MessagesStack';
@@ -11,7 +11,7 @@ import { ComingSoonScreen } from '../screens/placeholder/ComingSoonScreen';
 import { useL } from '../i18n/useLanguage';
 
 export type MainTabsParamList = {
-  Home: undefined;
+  Home: NavigatorScreenParams<HomeStackParamList>;
   Loads: NavigatorScreenParams<LoadsStackParamList>;
   Messages: NavigatorScreenParams<MessagesStackParamList>;
   Community: undefined;
@@ -41,7 +41,7 @@ export function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: L('home') }} />
+      <Tab.Screen name="Home" component={HomeStack} options={{ tabBarLabel: L('home') }} />
       <Tab.Screen name="Loads" component={LoadsStack} options={{ tabBarLabel: L('loads') }} />
       <Tab.Screen name="Messages" component={MessagesStack} options={{ tabBarLabel: L('msgs') }} />
       <Tab.Screen name="Community" options={{ tabBarLabel: L('community') }}>
