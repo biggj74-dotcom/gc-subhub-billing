@@ -110,6 +110,22 @@ export function useSubmitOffer(loadId: string) {
   });
 }
 
+/** Advances a load's status (booked -> en_route -> delivered), for the assigned driver. */
+export function useAdvanceLoadStatus(loadId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (status: LoadRow['status']) => {
+      const { error } = await supabase.from('loads').update({ status }).eq('id', loadId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['load', loadId] });
+      queryClient.invalidateQueries({ queryKey: ['loads'] });
+    },
+  });
+}
+
 export function useCreateLoad() {
   const queryClient = useQueryClient();
   const userId = useAuthStore((s) => s.session?.user.id);
