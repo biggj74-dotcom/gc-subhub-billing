@@ -66,16 +66,18 @@ Per the handoff doc's suggested build order, this repo currently implements:
    push *delivery* needs a one-time manual deploy step — see "Push
    notifications setup" below.
 
-The Community tab still renders a "Coming soon" placeholder — the 5-tab
-shell (Home / Loads / Messages / Community / Profile) is wired up per the
-prototype's validated IA, but Community itself hasn't been built (it's not
-in the handoff's suggested build order).
+All 5 tabs are now real. Beyond the handoff's suggested build order:
+
+9. ✅ **Community** — a flat feed (post + read, no replies/likes/moderation,
+   matching the prototype's own flat structure) backed by a new
+   `community_posts` table that isn't in the handoff's data model at all —
+   see the schema notes below.
 
 ## Setting up Supabase
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. In the SQL Editor, run every file in `supabase/migrations/` **in order**
-   (they're numbered `0001`...`0010`). If you have the
+   (they're numbered `0001`...`0011`). If you have the
    [Supabase CLI](https://supabase.com/docs/guides/cli) linked to your
    project instead, `supabase db push` will apply them the same way — except
    `0009_push_webhook.sql`, which needs a manual edit first (see "Push
@@ -192,6 +194,12 @@ moments later.
   handoff's `loads` schema has no full/partial field, so it was dropped
   rather than inventing a new column. Equipment-type and hazmat filters are
   implemented since those fields exist in the schema.
+- `community_posts` (0011) has no equivalent anywhere in the handoff's data
+  model — the prototype's Community tab was a flat, read-only mock feed
+  with nothing backing it. Kept intentionally minimal to match: one table,
+  no replies/likes/reporting. The prototype's ProfileScreen also had a
+  "Report an issue or block a user" action with no real behavior behind
+  it; that's still just a UI stub, not wired to anything real yet.
 
 ## Running the app
 
