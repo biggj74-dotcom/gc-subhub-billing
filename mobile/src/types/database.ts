@@ -124,6 +124,13 @@ export type NotificationRow = {
   created_at: string;
 };
 
+export type CommunityPostRow = {
+  id: string;
+  author_id: string;
+  body: string;
+  created_at: string;
+};
+
 type TableDef<Row> = { Row: Row; Insert: Partial<Row>; Update: Partial<Row>; Relationships: [] };
 
 export type Database = {
@@ -142,6 +149,7 @@ export type Database = {
       messages: TableDef<MessageRow>;
       subscriptions: TableDef<SubscriptionRow>;
       notifications: TableDef<NotificationRow>;
+      community_posts: TableDef<CommunityPostRow>;
     };
     Views: Record<string, never>;
     Functions: {

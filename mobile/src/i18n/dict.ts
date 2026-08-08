@@ -104,6 +104,10 @@ export const dict = {
     docRateConfirmation: 'Rate Confirmation',
     docOther: 'Other',
 
+    // community
+    noPosts: 'No posts yet — be the first to share something.',
+    sharePost: 'Share something with the community...',
+
     // misc
     comingSoon: 'Coming soon',
     comingSoonBody: "This screen isn't built yet — it's next up in the build order.",
@@ -204,6 +208,9 @@ export const dict = {
     docMedicalCard: 'Tarjeta médica',
     docRateConfirmation: 'Confirmación de tarifa',
     docOther: 'Otro',
+
+    noPosts: 'Aún no hay publicaciones — sé el primero en compartir algo.',
+    sharePost: 'Comparte algo con la comunidad...',
 
     comingSoon: 'Próximamente',
     comingSoonBody: 'Esta pantalla aún no está lista — es la siguiente en el plan de construcción.',
