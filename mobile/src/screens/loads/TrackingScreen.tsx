@@ -10,6 +10,7 @@ import { PrimaryButton } from '../../components/PrimaryButton';
 import { TextField } from '../../components/TextField';
 import { LoadingView } from '../../components/LoadingView';
 import { ErrorView } from '../../components/ErrorView';
+import { TrackingMap } from '../../components/TrackingMap';
 import { useL } from '../../i18n/useLanguage';
 import { useAuthStore } from '../../stores/authStore';
 import { useSendCheckIn, useTrackingEvents } from '../../hooks/useTracking';
@@ -98,6 +99,8 @@ export function TrackingScreen({ route, navigation }: NativeStackScreenProps<Loa
             {latest ? `${L('lastCheckIn')}: ${timeAgo(latest.created_at)}` : L('noCheckIns')}
           </Text>
         </View>
+
+        <TrackingMap events={events.data ?? []} />
 
         <Text style={[body, { color: C.silver, fontSize: 10, letterSpacing: 0.4 }]}>{L('checkIns').toUpperCase()}</Text>
         {events.data?.length ? (
