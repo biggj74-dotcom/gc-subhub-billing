@@ -2,6 +2,7 @@ import { ScrollView, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { C, display, body, mono } from '../../theme/tokens';
 import { TopBar } from '../../components/TopBar';
+import { LoadingView } from '../../components/LoadingView';
 import { useL } from '../../i18n/useLanguage';
 import { useSettlements } from '../../hooks/useSettlements';
 import type { HomeStackParamList } from '../../navigation/HomeStack';
@@ -10,6 +11,15 @@ export function EarningsScreen({ navigation }: NativeStackScreenProps<HomeStackP
   const L = useL();
   const { data: settlements, isLoading } = useSettlements();
   const total = (settlements ?? []).reduce((sum, s) => sum + s.net, 0);
+
+  if (isLoading) {
+    return (
+      <View className="flex-1" style={{ backgroundColor: C.bg }}>
+        <TopBar title={L('earnings')} onBack={() => navigation.goBack()} />
+        <LoadingView />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1" style={{ backgroundColor: C.bg }}>
@@ -23,7 +33,7 @@ export function EarningsScreen({ navigation }: NativeStackScreenProps<HomeStackP
           <Text style={[display, { color: C.paper, fontSize: 27, fontWeight: '700' }]}>${total.toLocaleString()}</Text>
         </View>
 
-        {!isLoading && !settlements?.length ? (
+        {!settlements?.length ? (
           <Text style={[body, { color: C.silver, fontSize: 12.5, textAlign: 'center', marginTop: 12 }]}>{L('noSettlements')}</Text>
         ) : null}
 

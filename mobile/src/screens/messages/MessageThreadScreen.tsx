@@ -34,8 +34,7 @@ export function MessageThreadScreen({ route, navigation }: NativeStackScreenProp
   const handleSend = () => {
     const text = body_.trim();
     if (!text) return;
-    setBody('');
-    sendMessage.mutate(text);
+    sendMessage.mutate(text, { onSuccess: () => setBody('') });
   };
 
   return (

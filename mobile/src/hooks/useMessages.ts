@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { showError } from '../lib/errors';
 import { useAuthStore } from '../stores/authStore';
 import { useMyLoads } from './useLoads';
 import type { MessageRow } from '../types/database';
@@ -65,5 +66,6 @@ export function useSendMessage(loadId: string) {
       const { error } = await supabase.from('messages').insert({ load_id: loadId, sender_id: userId, body });
       if (error) throw error;
     },
+    onError: showError,
   });
 }

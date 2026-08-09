@@ -8,6 +8,8 @@ import { TopBar } from '../../components/TopBar';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { TextField } from '../../components/TextField';
 import { StatusPill } from '../../components/StatusPill';
+import { LoadingView } from '../../components/LoadingView';
+import { ErrorView } from '../../components/ErrorView';
 import { useL } from '../../i18n/useLanguage';
 import { useAuthStore } from '../../stores/authStore';
 import {
@@ -43,7 +45,7 @@ export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<L
   const userId = useAuthStore((s) => s.session?.user.id);
   const [offerRate, setOfferRate] = useState('');
 
-  const { data: load, isLoading } = useQuery({
+  const { data: load, isLoading, isError, refetch } = useQuery({
     queryKey: ['load', loadId],
     queryFn: async () => {
       const { data, error } = await supabase.from('loads').select('*').eq('id', loadId).single();
@@ -66,11 +68,20 @@ export function LoadDetailScreen({ route, navigation }: NativeStackScreenProps<L
   const nextStep = load ? NEXT_STATUS[load.status] : undefined;
   const canRecordSettlement = isPoster && load.status === 'delivered' && !loadSettlement.data;
 
-  if (isLoading || !load) {
+  if (isLoading) {
     return (
       <View className="flex-1" style={{ backgroundColor: C.bg }}>
         <TopBar title="" onBack={() => navigation.goBack()} />
-        <Text style={[body, { color: C.silver, textAlign: 'center', marginTop: 24 }]}>{L('loading')}</Text>
+        <LoadingView />
+      </View>
+    );
+  }
+
+  if (isError || !load) {
+    return (
+      <View className="flex-1" style={{ backgroundColor: C.bg }}>
+        <TopBar title="" onBack={() => navigation.goBack()} />
+        <ErrorView onRetry={() => refetch()} />
       </View>
     );
   }

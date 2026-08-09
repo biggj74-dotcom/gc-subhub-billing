@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Filter } from 'lucide-react-native';
 import { C, display, body, mono } from '../../theme/tokens';
@@ -114,9 +114,11 @@ export function LoadBoardScreen({ navigation }: NativeStackScreenProps<LoadsStac
         refreshing={query.isRefetching}
         onRefresh={() => query.refetch()}
         ListEmptyComponent={
-          !query.isLoading ? (
+          query.isLoading ? (
+            <ActivityIndicator color={C.gold} style={{ marginTop: 24 }} />
+          ) : (
             <Text style={[body, { color: C.silver, fontSize: 12.5, textAlign: 'center', marginTop: 24 }]}>{L('noLoads')}</Text>
-          ) : null
+          )
         }
         renderItem={({ item }) => (
           <Pressable

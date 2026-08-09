@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
 import { Navigation } from 'lucide-react-native';
@@ -8,6 +8,8 @@ import { TopBar } from '../../components/TopBar';
 import { StatusPill } from '../../components/StatusPill';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { TextField } from '../../components/TextField';
+import { LoadingView } from '../../components/LoadingView';
+import { ErrorView } from '../../components/ErrorView';
 import { useL } from '../../i18n/useLanguage';
 import { useAuthStore } from '../../stores/authStore';
 import { useSendCheckIn, useTrackingEvents } from '../../hooks/useTracking';
@@ -39,7 +41,12 @@ export function TrackingScreen({ route, navigation }: NativeStackScreenProps<Loa
   const userId = useAuthStore((s) => s.session?.user.id);
   const [note, setNote] = useState('');
 
-  const { data: load, isLoading: loadLoading } = useQuery({
+  const {
+    data: load,
+    isLoading: loadLoading,
+    isError: loadError,
+    refetch: refetchLoad,
+  } = useQuery({
     queryKey: ['load', loadId],
     queryFn: async () => {
       const { data, error } = await supabase.from('loads').select('*').eq('id', loadId).single();
@@ -54,20 +61,24 @@ export function TrackingScreen({ route, navigation }: NativeStackScreenProps<Loa
   const isAssignedDriver = !!load && load.assigned_driver_id === userId;
   const latest = events.data?.[0];
 
-  const handleSendCheckIn = async () => {
-    try {
-      await sendCheckIn.mutateAsync(note);
-      setNote('');
-    } catch (err) {
-      Alert.alert(L('somethingWentWrong'), err instanceof Error ? err.message : String(err));
-    }
+  const handleSendCheckIn = () => {
+    sendCheckIn.mutate(note, { onSuccess: () => setNote('') });
   };
 
-  if (loadLoading || !load) {
+  if (loadLoading) {
     return (
       <View className="flex-1" style={{ backgroundColor: C.bg }}>
         <TopBar title={L('trackTitle')} onBack={() => navigation.goBack()} />
-        <Text style={[body, { color: C.silver, textAlign: 'center', marginTop: 24 }]}>{L('loading')}</Text>
+        <LoadingView />
+      </View>
+    );
+  }
+
+  if (loadError || !load) {
+    return (
+      <View className="flex-1" style={{ backgroundColor: C.bg }}>
+        <TopBar title={L('trackTitle')} onBack={() => navigation.goBack()} />
+        <ErrorView onRetry={() => refetchLoad()} />
       </View>
     );
   }

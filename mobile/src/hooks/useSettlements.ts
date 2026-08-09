@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { showError } from '../lib/errors';
 import { useAuthStore } from '../stores/authStore';
 import type { SettlementRow } from '../types/database';
 
@@ -57,5 +58,6 @@ export function useCreateSettlement(loadId: string) {
       queryClient.invalidateQueries({ queryKey: ['settlement', loadId] });
       queryClient.invalidateQueries({ queryKey: ['settlements'] });
     },
+    onError: showError,
   });
 }

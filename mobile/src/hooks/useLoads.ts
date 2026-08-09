@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { showError } from '../lib/errors';
 import { useAuthStore } from '../stores/authStore';
 import type { LoadOfferRow, LoadRow } from '../types/database';
 
@@ -72,6 +73,7 @@ export function useAcceptOffer(loadId: string) {
       queryClient.invalidateQueries({ queryKey: ['load', loadId] });
       queryClient.invalidateQueries({ queryKey: ['loads'] });
     },
+    onError: showError,
   });
 }
 
@@ -86,6 +88,7 @@ export function useRejectOffer(loadId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['load_offers', loadId] });
     },
+    onError: showError,
   });
 }
 
@@ -107,6 +110,7 @@ export function useSubmitOffer(loadId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['load_offers', loadId] });
     },
+    onError: showError,
   });
 }
 
@@ -123,6 +127,7 @@ export function useAdvanceLoadStatus(loadId: string) {
       queryClient.invalidateQueries({ queryKey: ['load', loadId] });
       queryClient.invalidateQueries({ queryKey: ['loads'] });
     },
+    onError: showError,
   });
 }
 
@@ -139,5 +144,6 @@ export function useCreateLoad() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['loads'] });
     },
+    onError: showError,
   });
 }

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { showError } from '../lib/errors';
 import { useAuthStore } from '../stores/authStore';
 import type { CommunityPostRow } from '../types/database';
 
@@ -34,5 +35,6 @@ export function useCreatePost() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['community_posts'] });
     },
+    onError: showError,
   });
 }

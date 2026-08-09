@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FlatList, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { Send } from 'lucide-react-native';
 import { C, body } from '../../theme/tokens';
 import { TopBar } from '../../components/TopBar';
@@ -25,8 +25,7 @@ export function CommunityScreen() {
   const handlePost = () => {
     const text = draft.trim();
     if (!text) return;
-    setDraft('');
-    createPost.mutate(text);
+    createPost.mutate(text, { onSuccess: () => setDraft('') });
   };
 
   return (
@@ -39,9 +38,11 @@ export function CommunityScreen() {
         refreshing={isRefetching}
         onRefresh={refetch}
         ListEmptyComponent={
-          !isLoading ? (
+          isLoading ? (
+            <ActivityIndicator color={C.gold} style={{ marginTop: 24 }} />
+          ) : (
             <Text style={[body, { color: C.silver, fontSize: 12.5, textAlign: 'center', marginTop: 24 }]}>{L('noPosts')}</Text>
-          ) : null
+          )
         }
         renderItem={({ item }) => (
           <View className="rounded p-3.5" style={{ backgroundColor: C.panel, borderWidth: 1, borderColor: C.line }}>

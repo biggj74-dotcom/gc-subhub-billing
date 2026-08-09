@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '../lib/supabase';
+import { showError } from '../lib/errors';
 import { useAuthStore } from '../stores/authStore';
 import type { SubscriptionRow, UserRole } from '../types/database';
 
@@ -33,5 +34,6 @@ export function useStartCheckout() {
       if (!data?.url) throw new Error('Checkout session did not return a URL');
       await WebBrowser.openBrowserAsync(data.url);
     },
+    onError: showError,
   });
 }

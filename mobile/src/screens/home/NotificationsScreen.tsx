@@ -1,4 +1,4 @@
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { C, body } from '../../theme/tokens';
 import { TopBar } from '../../components/TopBar';
@@ -31,11 +31,13 @@ export function NotificationsScreen({ navigation }: NativeStackScreenProps<HomeS
         refreshing={isRefetching}
         onRefresh={refetch}
         ListEmptyComponent={
-          !isLoading ? (
+          isLoading ? (
+            <ActivityIndicator color={C.gold} style={{ marginTop: 24 }} />
+          ) : (
             <Text style={[body, { color: C.silver, fontSize: 12.5, textAlign: 'center', marginTop: 24 }]}>
               {L('noNotifications')}
             </Text>
-          ) : null
+          )
         }
         renderItem={({ item }) => (
           <Pressable
