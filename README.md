@@ -26,6 +26,9 @@ supabase/    SQL migrations for the Postgres schema, RLS policies, and storage
 - **Backend**: Supabase (Postgres + Auth + Storage + Realtime + Edge
   Functions)
 - **Location**: expo-location (foreground-only) for tracking check-ins
+- **Maps**: Mapbox (`@rnmapbox/maps`) for the Tracking screen's map view —
+  this is the one piece of the stack that needs a custom dev client instead
+  of plain Expo Go, see "Map setup (Mapbox)"
 - **Push**: expo-notifications, delivered via a Supabase Edge Function
 - **Payments**: Stripe Billing (subscriptions) via Stripe Checkout, synced
   by a Stripe webhook running as a Supabase Edge Function
@@ -46,9 +49,11 @@ Per the handoff doc's suggested build order, this repo currently implements:
 4. ✅ **Documents** — upload UI on a dedicated Documents screen (off
    Profile), files go to the `documents` Storage bucket, rows to the
    `documents` table.
-5. ✅ **Tracking** — GPS check-ins (`tracking_events`) shown as a
-   chronological timeline; no map view yet (see `TrackingScreen`'s header
-   comment for the scope call).
+5. ✅ **Tracking** — GPS check-ins (`tracking_events`) shown as a map
+   (`TrackingMap`, Mapbox) with the chronological timeline underneath for
+   notes/timestamps the map can't show. The map is the reason this app now
+   needs a custom dev client instead of Expo Go — see "Map setup
+   (Mapbox)".
 6. ✅ **Messaging** — real-time per-load chat via Supabase Realtime.
 7. ✅ **Settlements + Stripe billing** — two related but separate things:
    - *Subscriptions*: `PricingScreen` opens real Stripe Checkout; a
@@ -213,16 +218,66 @@ moments later.
   both `hidden` and your block list — you can still always see your own
   posts, even hidden ones).
 
+## Map setup (Mapbox)
+
+Mapbox needs **two different tokens** — mixing them up is the most common
+way this setup goes wrong:
+
+1. **Public runtime token** (`pk.*`) — what the app itself uses at runtime
+   (`Mapbox.setAccessToken()` in `mobile/src/lib/mapbox.ts`). Safe to ship
+   in the app bundle. From your Mapbox account → Tokens. Set it as:
+   ```
+   EXPO_PUBLIC_MAPBOX_TOKEN=pk.your-token
+   ```
+2. **Secret downloads token** (`sk.*`, scope `Downloads:Read`) — used only
+   to fetch Mapbox's native SDK during a build; never touches app JS, never
+   ships in the bundle. Create one from your Mapbox account → Tokens →
+   "Create a token" → enable the `Downloads:Read` scope. Set it as:
+   ```
+   RNMAPBOX_MAPS_DOWNLOAD_TOKEN=sk.your-token
+   ```
+   For local builds (`npx expo run:ios`/`run:android`), putting this in
+   `mobile/.env` is enough — Expo CLI loads `.env` into the process
+   environment that the native build tools inherit. For `eas build`, `.env`
+   isn't available in that isolated environment at all — set it as an EAS
+   secret instead (`eas secret:create` or the project dashboard).
+
+Both go in `mobile/.env` (copy from `.env.example`) alongside the Supabase
+values. Neither is optional once you're building natively — a missing
+downloads token fails the build with a Mapbox SDK fetch error; a missing
+public token just leaves the map blank at runtime (`TrackingMap` doesn't
+crash without one, it degrades to Mapbox's own placeholder).
+
+One more thing this repo needed once real native builds entered the
+picture: `app.json` was converted to `app.config.js` (`mobile/app.config.js`)
+so it could read `RNMAPBOX_MAPS_DOWNLOAD_TOKEN`-style env vars at all — a
+static JSON file can't. That also meant setting explicit `ios.bundleIdentifier`
+/ `android.package` values (`com.gcsubhub.trucking`), since Expo can only
+auto-write those into a plain JSON config, not a JS one — change them if you
+want a different bundle ID before your first store submission.
+
 ## Running the app
+
+Because `@rnmapbox/maps` includes native code that plain Expo Go doesn't
+ship with, this app now needs a **custom dev client** rather than Expo Go —
+this applies to the whole app, not just the Tracking screen, since Metro
+builds one JS bundle either way. Build the dev client once per platform,
+then iterate against it same as you would Expo Go:
 
 ```bash
 cd mobile
 npm install
-npx expo start
+npx expo run:ios      # or: npx expo run:android
 ```
 
-Scan the QR code with Expo Go (iOS/Android), or press `i`/`a` for a
-simulator/emulator.
+That builds and installs a dev client on a simulator/device and starts the
+bundler. On later runs, `npx expo start --dev-client` alone is enough as
+long as nothing native changed. Both commands need the Mapbox downloads
+token set up first — see "Map setup (Mapbox)" below, or the build fails
+partway through fetching Mapbox's native SDK. No Xcode/Android Studio set
+up locally? Use `eas build --profile development` instead (needs an Expo
+account and `eas.json`, not included here) and install the resulting build
+on a device or simulator.
 
 ## Design system
 
