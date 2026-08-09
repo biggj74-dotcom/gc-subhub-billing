@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Location from 'expo-location';
 import { supabase } from '../lib/supabase';
+import { showError } from '../lib/errors';
 import type { TrackingEventRow } from '../types/database';
 
 export function useTrackingEvents(loadId: string) {
@@ -41,5 +42,6 @@ export function useSendCheckIn(loadId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracking_events', loadId] });
     },
+    onError: showError,
   });
 }

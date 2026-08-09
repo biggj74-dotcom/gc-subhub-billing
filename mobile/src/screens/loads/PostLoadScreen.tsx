@@ -21,20 +21,26 @@ export function PostLoadScreen({ navigation }: NativeStackScreenProps<LoadsStack
   const [pickupDate, setPickupDate] = useState('');
   const [posted, setPosted] = useState(false);
 
-  const canSubmit = origin && destination && rate;
+  const rateNum = Number(rate);
+  const milesNum = Number(miles);
+  const rateValid = rate.trim() !== '' && Number.isFinite(rateNum) && rateNum > 0;
+  const milesValid = miles.trim() === '' || (Number.isFinite(milesNum) && milesNum > 0);
+  const canSubmit = origin.trim() && destination.trim() && rateValid && milesValid;
 
-  const handleSubmit = async () => {
-    await createLoad.mutateAsync({
-      origin,
-      destination,
-      miles: miles ? Number(miles) : null,
-      rate: rate ? Number(rate) : null,
-      equipment_type: equipmentType || null,
-      weight: weight || null,
-      pickup_date: pickupDate || null,
-      hazmat: false,
-    });
-    setPosted(true);
+  const handleSubmit = () => {
+    createLoad.mutate(
+      {
+        origin,
+        destination,
+        miles: miles.trim() ? milesNum : null,
+        rate: rateNum,
+        equipment_type: equipmentType || null,
+        weight: weight || null,
+        pickup_date: pickupDate || null,
+        hazmat: false,
+      },
+      { onSuccess: () => setPosted(true) }
+    );
   };
 
   return (

@@ -28,14 +28,18 @@ export function RecordSettlementScreen({ route, navigation }: NativeStackScreenP
   });
 
   const createSettlement = useCreateSettlement(loadId);
-  const grossNum = Number(gross) || 0;
+  const grossNum = Number(gross);
   const deductionsNum = Number(deductions) || 0;
-  const net = grossNum - deductionsNum;
+  const net = (Number.isFinite(grossNum) ? grossNum : 0) - deductionsNum;
+  const grossValid = gross.trim() !== '' && Number.isFinite(grossNum) && grossNum > 0;
+  const deductionsValid = deductions.trim() === '' || (Number.isFinite(deductionsNum) && deductionsNum >= 0);
 
-  const handleSubmit = async () => {
-    if (!load?.assigned_driver_id) return;
-    await createSettlement.mutateAsync({ driverId: load.assigned_driver_id, gross: grossNum, deductions: deductionsNum });
-    navigation.goBack();
+  const handleSubmit = () => {
+    if (!load?.assigned_driver_id || !grossValid || !deductionsValid) return;
+    createSettlement.mutate(
+      { driverId: load.assigned_driver_id, gross: grossNum, deductions: deductionsNum },
+      { onSuccess: () => navigation.goBack() }
+    );
   };
 
   return (
@@ -59,7 +63,7 @@ export function RecordSettlementScreen({ route, navigation }: NativeStackScreenP
         <PrimaryButton
           title={L('recordSettlement')}
           onPress={handleSubmit}
-          disabled={!gross || !load?.assigned_driver_id}
+          disabled={!grossValid || !deductionsValid || !load?.assigned_driver_id}
           loading={createSettlement.isPending}
         />
       </ScrollView>

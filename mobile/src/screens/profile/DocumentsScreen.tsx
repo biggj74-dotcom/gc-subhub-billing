@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { FileText } from 'lucide-react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -40,16 +40,12 @@ export function DocumentsScreen({ navigation }: NativeStackScreenProps<ProfileSt
     const result = await DocumentPicker.getDocumentAsync({ type: '*/*', copyToCacheDirectory: true });
     if (result.canceled || !result.assets?.[0]) return;
     const asset = result.assets[0];
-    try {
-      await uploadDocument.mutateAsync({
-        type: selectedType,
-        uri: asset.uri,
-        name: asset.name,
-        mimeType: asset.mimeType,
-      });
-    } catch (err) {
-      Alert.alert(L('somethingWentWrong'), err instanceof Error ? err.message : String(err));
-    }
+    uploadDocument.mutate({
+      type: selectedType,
+      uri: asset.uri,
+      name: asset.name,
+      mimeType: asset.mimeType,
+    });
   };
 
   return (

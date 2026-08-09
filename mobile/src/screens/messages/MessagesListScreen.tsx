@@ -1,4 +1,4 @@
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { C, display, body, mono } from '../../theme/tokens';
 import { TopBar } from '../../components/TopBar';
@@ -30,11 +30,13 @@ export function MessagesListScreen({ navigation }: NativeStackScreenProps<Messag
         refreshing={conversations.isRefetching}
         onRefresh={() => conversations.refetch()}
         ListEmptyComponent={
-          !conversations.isLoading ? (
+          conversations.isLoading ? (
+            <ActivityIndicator color={C.gold} style={{ marginTop: 24 }} />
+          ) : (
             <Text style={[body, { color: C.silver, fontSize: 12.5, textAlign: 'center', marginTop: 24 }]}>
               {L('noConversations')}
             </Text>
-          ) : null
+          )
         }
         renderItem={({ item }) => (
           <Pressable
