@@ -68,16 +68,21 @@ Per the handoff doc's suggested build order, this repo currently implements:
 
 All 5 tabs are now real. Beyond the handoff's suggested build order:
 
-9. ✅ **Community** — a flat feed (post + read, no replies/likes/moderation,
-   matching the prototype's own flat structure) backed by a new
+9. ✅ **Community** — a flat feed (post + read) backed by a new
    `community_posts` table that isn't in the handoff's data model at all —
    see the schema notes below.
+10. ✅ **Community moderation** — replaces the prototype's "Report an issue
+    or block a user" stub with the real thing: report a post (auto-hidden
+    once 3 different people report it) and block a user (their posts drop
+    out of your own feed, enforced by RLS, not just client-side filtering).
+    No admin review queue — the schema has no admin/moderator role, so this
+    is scoped to what a user can do for themselves.
 
 ## Setting up Supabase
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. In the SQL Editor, run every file in `supabase/migrations/` **in order**
-   (they're numbered `0001`...`0011`). If you have the
+   (they're numbered `0001`...`0012`). If you have the
    [Supabase CLI](https://supabase.com/docs/guides/cli) linked to your
    project instead, `supabase db push` will apply them the same way — except
    `0009_push_webhook.sql`, which needs a manual edit first (see "Push
@@ -197,9 +202,16 @@ moments later.
 - `community_posts` (0011) has no equivalent anywhere in the handoff's data
   model — the prototype's Community tab was a flat, read-only mock feed
   with nothing backing it. Kept intentionally minimal to match: one table,
-  no replies/likes/reporting. The prototype's ProfileScreen also had a
-  "Report an issue or block a user" action with no real behavior behind
-  it; that's still just a UI stub, not wired to anything real yet.
+  no replies or likes.
+- `community_post_reports` and `user_blocks` (0012) back the prototype's
+  "Report an issue or block a user" action, which used to be a UI stub —
+  it's real now. There's no admin/moderator role anywhere in the schema,
+  so there's no review queue: a post is auto-hidden once 3 distinct users
+  report it (`check_post_report_threshold()`), and blocking just removes
+  the blocked user's posts from your own feed via RLS
+  (`community_posts`'s SELECT policy was rewritten in 0012 to account for
+  both `hidden` and your block list — you can still always see your own
+  posts, even hidden ones).
 
 ## Running the app
 

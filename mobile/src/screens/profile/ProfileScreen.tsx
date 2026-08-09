@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { ChevronRight, CreditCard, FileText, ShieldCheck } from 'lucide-react-native';
+import { ChevronRight, CreditCard, FileText, ShieldCheck, UserX } from 'lucide-react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { C, display, body } from '../../theme/tokens';
 import { TopBar } from '../../components/TopBar';
@@ -90,6 +90,18 @@ export function ProfileScreen({ navigation }: NativeStackScreenProps<ProfileStac
           <Text style={[body, { color: C.silver, fontSize: 12 }]}>
             {subscription?.status === 'active' ? L(subscription.plan) : L('viewPlans')}
           </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => navigation.navigate('BlockedUsers')}
+          className="flex-row items-center justify-between rounded p-4"
+          style={{ backgroundColor: C.panel, borderWidth: 1, borderColor: C.line }}
+        >
+          <View className="flex-row items-center gap-2.5">
+            <UserX size={14} color={C.silver} />
+            <Text style={[body, { color: C.paper, fontSize: 13, fontWeight: '600' }]}>{L('blockedUsers')}</Text>
+          </View>
+          <ChevronRight size={16} color={C.silver} />
         </Pressable>
 
         <PrimaryButton title={L('signOut')} onPress={signOut} variant="outline" />

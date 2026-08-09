@@ -128,6 +128,22 @@ export type CommunityPostRow = {
   id: string;
   author_id: string;
   body: string;
+  hidden: boolean;
+  created_at: string;
+};
+
+export type CommunityPostReportRow = {
+  id: string;
+  post_id: string;
+  reporter_id: string;
+  reason: string | null;
+  created_at: string;
+};
+
+export type UserBlockRow = {
+  id: string;
+  blocker_id: string;
+  blocked_id: string;
   created_at: string;
 };
 
@@ -150,6 +166,8 @@ export type Database = {
       subscriptions: TableDef<SubscriptionRow>;
       notifications: TableDef<NotificationRow>;
       community_posts: TableDef<CommunityPostRow>;
+      community_post_reports: TableDef<CommunityPostReportRow>;
+      user_blocks: TableDef<UserBlockRow>;
     };
     Views: Record<string, never>;
     Functions: {
